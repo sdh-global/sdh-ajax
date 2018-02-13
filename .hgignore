@@ -1,0 +1,10 @@
+syntax: glob
+*.o
+*.orig
+*.pyc
+*.rej
+*.tmp
+*~
+.\#*
+.idea/*
+dist/
