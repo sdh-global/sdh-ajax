@@ -39,7 +39,7 @@ def accept_ajax(view_func):
         # no other way to get all headers, except lookup protected variable
         resp = {'status_code': 200,
                 'headers': [],
-                'extension': 'ua2.ajax.accept_ajax'}
+                'extension': 'sdh.ajax.accept_ajax'}
 
         message_list = []
         # compatibility with jquery-django-messages-ui

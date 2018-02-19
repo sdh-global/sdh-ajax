@@ -17,7 +17,7 @@ setup(
     package_dir={'': 'src'},
     entry_points={},
     eager_resources=['sdh'],
-    version='1.0.0',
+    version='1.0.1',
     install_requires=['Django>=1.8', ],
     license='BSD License',
     include_package_data=True,
@@ -38,7 +38,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries'],
-    description='Alternative package for rendering tables',
+    description='Django ajax helper',
     long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
     url='https://bitbucket.org/sdh-llc/sdh-ajax',
 )
