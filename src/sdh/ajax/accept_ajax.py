@@ -1,8 +1,21 @@
-import sys
+from __future__ import unicode_literals
 
+import sys
+import json
 import logging
 
-from django.http.response import HttpResponseBase, JsonResponse
+from django.http.response import HttpResponseBase, HttpResponse
+
+try:
+    from django.http.response import JsonResponse
+except ImportError:
+    class JsonResponse(HttpResponse):
+        def __init__(self, data, **kwargs):
+            kwargs.setdefault('content_type', 'application/json')
+            data = json.dumps(data, ensure_ascii=False)
+            super(JsonResponse, self).__init__(content=data, **kwargs)
+
+
 from django.http import Http404
 from django.conf import settings
 from django.views.debug import ExceptionReporter
@@ -36,7 +49,6 @@ def accept_ajax(view_func):
                 response['debug_html'] = report.get_traceback_html()
             return JsonResponse(response, json_dumps_params={'ensure_ascii': False})
 
-        # no other way to get all headers, except lookup protected variable
         resp = {'status_code': 200,
                 'headers': [],
                 'extension': 'sdh.ajax.accept_ajax'}
@@ -65,6 +77,10 @@ def accept_ajax(view_func):
 
         elif isinstance(response, HttpResponseBase) and response['Content-Type'] == 'application/json':
             return response
+        elif isinstance(response, HttpResponseBase) and response.status_code in (301, 302):
+            resp['status_code'] = response.status_code
+            resp['type'] = 'redirect'
+            resp['headers'] = response._headers
         else:
             resp['content'] = response.content
             resp['type'] = 'string'
