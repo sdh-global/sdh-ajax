@@ -16,7 +16,6 @@ except ImportError:
             data = json.dumps(data, **dumps_params)
             super(JsonResponse, self).__init__(content=data, **kwargs)
 
-
 from django.http import Http404
 from django.conf import settings
 from django.views.debug import ExceptionReporter
@@ -78,10 +77,11 @@ def accept_ajax(view_func):
 
         elif isinstance(response, HttpResponseBase) and response['Content-Type'] == 'application/json':
             return response
-        elif isinstance(response, HttpResponseBase) and response.status_code in (301, 302):
+        elif isinstance(response, HttpResponseBase) and request.is_ajax() and response.status_code in (301, 302):
             resp['status_code'] = response.status_code
             resp['type'] = 'redirect'
-            resp['headers'] = response._headers
+            resp['headers'] = {'location': response.get('location')}
+            return JsonResponse(resp, json_dumps_params={'ensure_ascii': False})
         else:
             resp['content'] = response.content
             resp['type'] = 'string'

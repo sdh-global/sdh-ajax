@@ -41,17 +41,25 @@ AjaxConverter = {
         if (json_data.status_code && json_data.extension && json_data.extension == 'sdh.ajax.accept_ajax') {
             switch (json_data.status_code) {
                 case 200:
-                return json_data.content
+                    return json_data.content
+
+                case 302:
+                    if (json_data.headers.location) {
+                        location.href = json_data.headers.location;
+                    } else {
+                        location.href = json_data.headers.location = '/'
+                    }
+                    break;
 
                 case 500:
-                if (json_data.debug_msg) {
+                    if (json_data.debug_msg) {
 
-                    var debug_window = window.open();
-                    debug_window.document.write(json_data.debug_msg);
-                } else {
-                    console.log('Error');
-                }
-                break;
+                        var debug_window = window.open();
+                        debug_window.document.write(json_data.debug_msg);
+                    } else {
+                        console.log('Error');
+                    }
+                    break;
 
             };
             return {};
