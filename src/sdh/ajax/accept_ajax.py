@@ -12,7 +12,8 @@ except ImportError:
     class JsonResponse(HttpResponse):
         def __init__(self, data, **kwargs):
             kwargs.setdefault('content_type', 'application/json')
-            data = json.dumps(data, ensure_ascii=False)
+            dumps_params = kwargs.pop('json_dumps_params', {})
+            data = json.dumps(data, **dumps_params)
             super(JsonResponse, self).__init__(content=data, **kwargs)
 
 
