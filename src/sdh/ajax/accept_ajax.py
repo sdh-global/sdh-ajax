@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import sys
 import json
 import logging
+import functools
 
 from django.http.response import HttpResponseBase, HttpResponse
 
@@ -21,10 +22,12 @@ from django.conf import settings
 from django.views.debug import ExceptionReporter
 from django.contrib import messages
 
+
 logger = logging.getLogger('django.request')
 
 
 def accept_ajax(view_func):
+    @functools.wraps(view_func)
     def _wrap_view_func(request, *args, **kwargs):
         try:
             response = view_func(request, *args, **kwargs)
