@@ -86,7 +86,10 @@ def accept_ajax(view_func):
             resp['headers'] = {'location': response.get('location')}
             return JsonResponse(resp, json_dumps_params={'ensure_ascii': False})
         else:
-            resp['content'] = response.content
+            buff = response.content
+            if isinstance(buff, bytes):
+                buff = buff.decode('utf-8')
+            resp['content'] = buff
             resp['type'] = 'string'
             resp['headers'] = response._headers
 
