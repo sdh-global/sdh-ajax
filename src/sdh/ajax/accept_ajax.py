@@ -85,7 +85,8 @@ def accept_ajax(view_func):
             resp['type'] = 'redirect'
             resp['headers'] = {'location': response.get('location')}
             return JsonResponse(resp, json_dumps_params={'ensure_ascii': False})
-        else:
+        elif isinstance(response, HttpResponseBase) and request.is_ajax():
+            # do processing only if request is ajax
             buff = response.content
             if isinstance(buff, bytes):
                 buff = buff.decode('utf-8')
