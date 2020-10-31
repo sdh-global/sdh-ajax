@@ -1,0 +1,12 @@
+*.o
+*.orig
+*.rej
+*.pyc
+*.tmp
+*.DS_Store
+*~
+.\#*
+env/*
+.idea/
+dist/*
+src/*egg-info/*

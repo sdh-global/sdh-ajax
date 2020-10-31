@@ -1,21 +1,9 @@
-from __future__ import unicode_literals
-
 import sys
-import json
 import logging
 import functools
 
-from django.http.response import HttpResponseBase, HttpResponse
-
-try:
-    from django.http.response import JsonResponse
-except ImportError:
-    class JsonResponse(HttpResponse):
-        def __init__(self, data, **kwargs):
-            kwargs.setdefault('content_type', 'application/json')
-            dumps_params = kwargs.pop('json_dumps_params', {})
-            data = json.dumps(data, **dumps_params)
-            super(JsonResponse, self).__init__(content=data, **kwargs)
+from django.http.response import HttpResponseBase
+from django.http.response import JsonResponse
 
 from django.http import Http404
 from django.conf import settings
@@ -50,6 +38,7 @@ def accept_ajax(view_func):
                 report = ExceptionReporter(request, *sys.exc_info())
                 response['debug_msg'] = report.get_traceback_text()
                 response['debug_html'] = report.get_traceback_html()
+
             return JsonResponse(response, json_dumps_params={'ensure_ascii': False})
 
         resp = {'status_code': 200,
@@ -57,6 +46,7 @@ def accept_ajax(view_func):
                 'extension': 'sdh.ajax.accept_ajax'}
 
         message_list = []
+
         # compatibility with jquery-django-messages-ui
         for message in messages.get_messages(request):
             message_list.append({
@@ -68,6 +58,7 @@ def accept_ajax(view_func):
             resp['messages'] = message_list
 
         non_ajax_handler = None
+
         if isinstance(response, dict):
             resp['content'] = response
             resp['type'] = 'dict'
@@ -80,11 +71,13 @@ def accept_ajax(view_func):
 
         elif isinstance(response, HttpResponseBase) and response['Content-Type'] == 'application/json':
             return response
+
         elif isinstance(response, HttpResponseBase) and request.is_ajax() and response.status_code in (301, 302):
             resp['status_code'] = response.status_code
             resp['type'] = 'redirect'
             resp['headers'] = {'location': response.get('location')}
             return JsonResponse(resp, json_dumps_params={'ensure_ascii': False})
+
         elif isinstance(response, HttpResponseBase) and request.is_ajax():
             # do processing only if request is ajax
             buff = response.content
