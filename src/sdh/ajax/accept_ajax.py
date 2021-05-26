@@ -85,7 +85,7 @@ def accept_ajax(view_func):
                 buff = buff.decode('utf-8')
             resp['content'] = buff
             resp['type'] = 'string'
-            resp['headers'] = getattr(response, '_headers', None) or getattr(response, 'headers', None)
+            resp['headers'] = dict(getattr(response, '_headers', {}) or getattr(response, 'headers', {}))
 
         if request.is_ajax() or non_ajax_handler:
             new_response = JsonResponse(resp, json_dumps_params={'ensure_ascii': False})
