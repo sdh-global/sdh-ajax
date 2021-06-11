@@ -10,8 +10,8 @@ from django.conf import settings
 from django.views.debug import ExceptionReporter
 from django.contrib import messages
 
-
-logger = logging.getLogger('django.request')
+logger_name = getattr(settings, 'SDH_AJAX_LOGGER', 'django.request')
+logger = logging.getLogger(logger_name)
 
 
 def accept_ajax(view_func):
