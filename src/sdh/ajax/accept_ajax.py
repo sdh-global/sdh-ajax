@@ -2,6 +2,7 @@ import sys
 import logging
 import functools
 
+from django.db import transaction
 from django.http.response import HttpResponseBase
 from django.http.response import JsonResponse
 
@@ -25,6 +26,10 @@ def accept_ajax(view_func):
         except Exception:
             if not request.is_ajax():
                 raise
+
+            con = transaction.get_connection()
+            if con.in_atomic_block:
+                transaction.rollback()
 
             logger.error('Internal Server Error: %s' % request.path,
                          exc_info=sys.exc_info(),
