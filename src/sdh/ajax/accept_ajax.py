@@ -29,7 +29,7 @@ def accept_ajax(view_func):
 
             con = transaction.get_connection()
             if con.in_atomic_block:
-                transaction.rollback()
+                transaction.set_rollback(True)
 
             logger.error('Internal Server Error: %s' % request.path,
                          exc_info=sys.exc_info(),
