@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 import os
 
-version = '1.0.12'
+version = '1.0.13'
 
 setup(
     name='sdh.ajax',
@@ -32,6 +32,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries'],
