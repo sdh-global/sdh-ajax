@@ -2,9 +2,9 @@ import sys
 import logging
 import functools
 
-from django.db import transaction
 from django.http.response import HttpResponseBase
 from django.http.response import JsonResponse
+from django.db import connections
 
 from django.http import Http404
 from django.conf import settings
@@ -13,6 +13,10 @@ from django.contrib import messages
 
 logger_name = getattr(settings, 'SDH_AJAX_LOGGER', 'django.request')
 logger = logging.getLogger(logger_name)
+
+
+def _is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
 
 def accept_ajax(view_func):
@@ -24,12 +28,12 @@ def accept_ajax(view_func):
             raise Http404(e)
 
         except Exception:
-            if not request.is_ajax():
+            if not _is_ajax(request):
                 raise
 
-            con = transaction.get_connection()
-            if con.in_atomic_block:
-                transaction.set_rollback(True)
+            for db in connections.all():
+                if db.settings_dict['ATOMIC_REQUESTS'] and db.in_atomic_block:
+                    db.set_rollback(True)
 
             logger.error('Internal Server Error: %s' % request.path,
                          exc_info=sys.exc_info(),
@@ -77,13 +81,13 @@ def accept_ajax(view_func):
         elif isinstance(response, HttpResponseBase) and response['Content-Type'] == 'application/json':
             return response
 
-        elif isinstance(response, HttpResponseBase) and request.is_ajax() and response.status_code in (301, 302):
+        elif isinstance(response, HttpResponseBase) and _is_ajax(request) and response.status_code in (301, 302):
             resp['status_code'] = response.status_code
             resp['type'] = 'redirect'
             resp['headers'] = {'location': response.get('location')}
             return JsonResponse(resp, json_dumps_params={'ensure_ascii': False})
 
-        elif isinstance(response, HttpResponseBase) and request.is_ajax():
+        elif isinstance(response, HttpResponseBase) and _is_ajax(request):
             # do processing only if request is ajax
             buff = response.content
             if isinstance(buff, bytes):
@@ -92,7 +96,7 @@ def accept_ajax(view_func):
             resp['type'] = 'string'
             resp['headers'] = dict(getattr(response, '_headers', {}) or getattr(response, 'headers', {}))
 
-        if request.is_ajax() or non_ajax_handler:
+        if _is_ajax(request) or non_ajax_handler:
             new_response = JsonResponse(resp, json_dumps_params={'ensure_ascii': False})
         else:
             new_response = response
