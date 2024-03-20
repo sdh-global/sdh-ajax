@@ -2,18 +2,27 @@
 requires = ["setuptools >= 61.0"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["src/"]
+include = ["sdh.ajax"]
+
 [project]
 name = "sdh.ajax"
 description = "Utils to store data into json"
 readme = "README.rst"
 requires-python = ">= 3.8"
 dependencies = [
-  "django>=2.2",
+  "Django>=2.2",
 ]
 authors = [
   {name = "Software Development Hub LLC", email = "dev-tools@sdh.com.ua"},
+  {name = "Viacheslav Vic Bukhantsov", email = "vic.bukhantsov@gmail.com"},
+
 ]
-license = {file="LICENSE.txt"}
+maintainers = [
+  {name = "Viacheslav Vic Bukhantsov", email = "vic.bukhantsov@gmail.com"}
+]
+license = {file = "LICENSE.txt"}
 classifiers = [
 	'Development Status :: 5 - Production/Stable',
 	'Environment :: Web Environment',
